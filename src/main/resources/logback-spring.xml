@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<!--로그 파일 저장 위치 -->
+	<property name="LOGS_PATH" value="./logs" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>%d{HH:mm} %-5level %logger{36} - %msg%n</Pattern>
+		</layout>
+	</appender>
+	<appender name="SAMPLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<!-- [2018-08-17] [15:24:21.355] [log level] [logName] [class.java line] 
+				[message] -->
+			<!-- 날짜 시간 로그레벨 로거이름 로그인클래스.java 몇번째줄 로그메세지 -->
+			<pattern>[%d{yyyy-MM-dd}] [%d{HH:mm:ss.SSS}] [%p] [%c{1}] [%F:%L]
+				[%m]%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="DAILY_ROLLING_FILE_APPENDER"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOGS_PATH}/logback.log</file>
+		<encoder>
+			<pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level
+				%logger{35} - %msg%n</pattern>
+		</encoder>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOGS_PATH}/logback.%d{yyyy-MM-dd}.%i.log.gz
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<!-- or whenever the file size reaches 100MB -->
+				<maxFileSize>5MB</maxFileSize>
+				<!-- kb, mb, gb -->
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+	</appender>
+
+	<logger name="com.example.demo" level="DEBUG">
+		<appender-ref ref="SAMPLE" />
+	</logger>
+	<logger name="com.example.demo" level="INFO">
+		<appender-ref ref="DAILY_ROLLING_FILE_APPENDER" />
+	</logger>
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

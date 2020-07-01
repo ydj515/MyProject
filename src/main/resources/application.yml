@@ -1,0 +1,20 @@
+server:
+  address: localhost
+  port: 8080
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://34.94.150.253:3306/hobak_db?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    username: root
+    password: dbehdwls_hobak
+  mvc:
+    view:
+      prefix: /WEB-INF/views/
+      suffix: .jsp
+  aop:
+    auto: true
+    
+logging:
+  config: classpath:logback-spring.xml
+  file:
+    path: logs

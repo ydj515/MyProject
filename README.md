@@ -8,7 +8,7 @@
 
 ## 환경
 - Spring 4.3.7
-- Spring Boot 1.5.2
+- Spring Boot 2.3
 - Java 1.8
 - Maven 3.1.1
 - JSoup 1,10,2
