@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.example.project.mapper.NewsMapper">
+
+	<insert id="newsInsert" parameterType="com.example.project.domain.NewsVO">
+		insert into MWS_COLT_NEWS
+		values
+		(#{ID},#{AID},#{TITLE},#{CONTENT},#{IMAGE},now(),now());
+	</insert>
+
+	<select id="newsSelect" resultType="com.example.project.domain.NewsVO">
+		select * from MWS_COLT_NEWS
+	</select>
+
+	<update id="newsUpdate" parameterType="int">
+		update MWS_COLT_NEWS
+		set
+		UPT_DT=now()
+		where id=#{ID}
+	</update>
+
+</mapper>
