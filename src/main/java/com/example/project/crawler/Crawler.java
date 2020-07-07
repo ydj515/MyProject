@@ -20,11 +20,8 @@ public class Crawler {
 	public Map<Integer, NewsItem> run(String threadNumber) throws IOException {
 
 		Document doc = makeConnection(CrawlingCV.BASE_URL + threadNumber);
-
 		Map<Integer, NewsItem> newsItemMap = new HashMap<>();
-
 		String category = getCategory(threadNumber);
-
 		Elements items = doc.select(CrawlingCV.NEWS_ITEM);
 
 		for (int i = 0; i < items.size(); i++) {
@@ -34,6 +31,7 @@ public class Crawler {
 			String url = getNewsUrl(rankingHeadLineAs);
 			Elements images = items.get(i).select(CrawlingCV.IMAGE_TAG); // IMAGE
 			Elements rankingViews = items.get(i).select(CrawlingCV.VIEW_TAG); // VIEW
+
 			NewsItem newsItem = makeNewsItem(category, url, titles, contents, images, rankingViews, rankingHeadLineAs);
 			newsItemMap.put(i, newsItem);
 		}
@@ -81,24 +79,23 @@ public class Crawler {
 
 	private String makeAid(Elements rankingHeadLineAs) {
 		String aHref = rankingHeadLineAs.attr("href");
-
 		StringBuilder stringBuilder = new StringBuilder();
 
-		Pattern oidPattern = Pattern.compile(CrawlingCV.OID_PATTERN);
-		Pattern aidPattern = Pattern.compile(CrawlingCV.AID_PATTERN);
+		stringBuilder = findString(stringBuilder, CrawlingCV.OID_PATTERN, aHref);
+		stringBuilder = findString(stringBuilder, CrawlingCV.AID_PATTERN, aHref);
 
+		return stringBuilder.toString();
+	}
+
+	private StringBuilder findString(StringBuilder stringBuilder, String patternString, String aHref) {
+		Pattern oidPattern = Pattern.compile(patternString);
 		Matcher matcher = oidPattern.matcher(aHref);
-		Matcher matcher2 = aidPattern.matcher(aHref);
 
 		while (matcher.find()) {
 			stringBuilder.append(matcher.group(1));
 		}
 
-		while (matcher2.find()) {
-			stringBuilder.append(matcher2.group(1));
-		}
-
-		return stringBuilder.toString();
+		return stringBuilder;
 	}
 
 }

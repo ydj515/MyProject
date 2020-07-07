@@ -1,50 +1,427 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-	<!--로그 파일 저장 위치 -->
-	<property name="LOGS_PATH" value="./logs" />
-
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-		<layout class="ch.qos.logback.classic.PatternLayout">
-			<Pattern>%d{HH:mm} %-5level %logger{36} - %msg%n</Pattern>
-		</layout>
-	</appender>
-	<appender name="SAMPLE" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<!-- [2018-08-17] [15:24:21.355] [log level] [logName] [class.java line] 
-				[message] -->
-			<!-- 날짜 시간 로그레벨 로거이름 로그인클래스.java 몇번째줄 로그메세지 -->
-			<pattern>[%d{yyyy-MM-dd}] [%d{HH:mm:ss.SSS}] [%p] [%c{1}] [%F:%L]
-				[%m]%n</pattern>
-		</encoder>
-	</appender>
-	<appender name="DAILY_ROLLING_FILE_APPENDER"
-		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${LOGS_PATH}/logback.log</file>
-		<encoder>
-			<pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level
-				%logger{35} - %msg%n</pattern>
-		</encoder>
-		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${LOGS_PATH}/logback.%d{yyyy-MM-dd}.%i.log.gz
-			</fileNamePattern>
-			<timeBasedFileNamingAndTriggeringPolicy
-				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<!-- or whenever the file size reaches 100MB -->
-				<maxFileSize>5MB</maxFileSize>
-				<!-- kb, mb, gb -->
-			</timeBasedFileNamingAndTriggeringPolicy>
-			<maxHistory>30</maxHistory>
+	<appender name="console-appender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+    		<!-- <charset>euc-kr</charset> -->
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+	
+    <appender name="sql-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/sql.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<fileNamePattern>${app.log.dir}/sql.%i.log.zip</fileNamePattern>
+			<minIndex>1</minIndex>
+			<maxIndex>3</maxIndex>
 		</rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+	      <maxFileSize>5MB</maxFileSize>
+	    </triggeringPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="slow-query-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/slow-query.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<fileNamePattern>${app.log.dir}/slow-query.%i.log.zip</fileNamePattern>
+			<minIndex>1</minIndex>
+			<maxIndex>3</maxIndex>
+		</rollingPolicy>
+       	<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+	      <maxFileSize>5MB</maxFileSize>
+	    </triggeringPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="wspider-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/${log.file}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/${log.file}.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="core-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/core.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/core.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="image-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/image.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/image.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="http-appender" class="ch.qos.logback.classic.sift.SiftingAppender">
+		<!-- This is MDC value -->
+		<!-- We will assign a value to 'logFileName' via Java code -->
+		<discriminator>
+			<key>location</key>
+			<defaultValue>http.log</defaultValue>
+		</discriminator>
+		<sift>
+			<!-- A standard RollingFileAppender, the log file is based on 'logFileName' at runtime -->
+			<appender name="http-${location}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+				<file>${app.log.dir}/http/${location}</file>
+				<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+					<Pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %msg%n</Pattern>
+				</encoder>
+				<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+					<fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM/dd,aux}/http/${location}.%d{yyyy-MM-dd}.log
+					</fileNamePattern>
+					<maxHistory>30</maxHistory>
+				</rollingPolicy>
+			</appender>
+		</sift>
 	</appender>
+    
+    <appender name="task-appender" class="ch.qos.logback.classic.sift.SiftingAppender">
+		<!-- This is MDC value -->
+		<!-- We will assign a value to 'logFileName' via Java code -->
+		<discriminator>
+			<key>location</key>
+			<defaultValue>task</defaultValue>
+		</discriminator>
+		<sift>
+			<!-- A standard RollingFileAppender, the log file is based on 'logFileName' at runtime -->
+			<appender name="task-${location}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+				<file>${app.log.dir}/${location}.log</file>
+				<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+					<Pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</Pattern>
+				</encoder>
+				<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+					<fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM/dd,aux}/${location}.%d{yyyy-MM-dd}.log
+					</fileNamePattern>
+					<maxHistory>30</maxHistory>
+				</rollingPolicy>
+			</appender>
+		</sift>
+	</appender>
+    
+    <appender name="monitor-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/monitor.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/monitor.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="rest-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/rest.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/rest.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="error-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="file-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/file.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/file.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="recovery-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/recovery.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/recovery.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="slow-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/slow.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/slow.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="proxy-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/proxy.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/proxy.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="proxy-monitor-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/proxy-monitor.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/proxy-monitor.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level] | %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="smtcrawler-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/smtcralwer.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/smtcralwer.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="cache-appender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${app.log.dir}/cache.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM,aux}/cache.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %msg%n</pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="backup-appender" class="ch.qos.logback.classic.sift.SiftingAppender">
+		<!-- This is MDC value -->
+		<!-- We will assign a value to 'logFileName' via Java code -->
+		<discriminator>
+			<key>location</key>
+			<defaultValue>backup.log</defaultValue>
+		</discriminator>
+		<sift>
+			<!-- A standard RollingFileAppender, the log file is based on 'logFileName' at runtime -->
+			<appender name="backup-${location}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+				<file>${app.log.dir}/backup/${location}</file>
+				<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+					<Pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %msg%n</Pattern>
+				</encoder>
+				<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+					<fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM/dd,aux}/backup/${location}.%d{yyyy-MM-dd}.log
+					</fileNamePattern>
+					<maxHistory>30</maxHistory>
+				</rollingPolicy>
+			</appender>
+		</sift>
+	</appender>
+	
+    <appender name="subjobhis-appender" class="ch.qos.logback.classic.sift.SiftingAppender">
+		<!-- This is MDC value -->
+		<!-- We will assign a value to 'logFileName' via Java code -->
+		<discriminator>
+			<key>subjobhis-location</key>
+			<defaultValue>subjobhis</defaultValue>
+		</discriminator>
+		<sift>
+			<!-- A standard RollingFileAppender, the log file is based on 'logFileName' at runtime -->
+			<appender name="subjobhis-${subjobhis-location}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+				<file>${app.log.dir}/subjobhis/${subjobhis-location}.log</file>
+				<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+					<Pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%-5level][%.20thread] | %C{1}.%M [%L] - %msg%n</Pattern>
+				</encoder>
+				<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+					<fileNamePattern>${app.log.dir}/logback/%d{yyyy/MM/dd,aux}/subjobhis/${subjobhis-location}.%d{yyyy-MM-dd}.log
+					</fileNamePattern>
+					<maxHistory>30</maxHistory>
+				</rollingPolicy>
+			</appender>
+		</sift>
+	</appender>
+	
+	<logger name="commonLogger" additivity="false">
+		<level value="DEBUG" />
+	</logger>
+    
+    <logger name="WSPIDER" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="wspider-appender" />
+	</logger>
+	
+	<logger name="CACHE" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="cache-appender" />
+	</logger>
+	
+	<logger name="ERROR" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="error-appender" />
+	</logger>
+	
+	<logger name="IMAGE" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="image-appender" />
+	</logger>
+	
+	<logger name="RECOVERY" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="recovery-appender" />
+	</logger>
+	
+	<logger name="SLOW" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="slow-appender" />
+	</logger>
+	
+	<logger name="REST" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="rest-appender" />
+	</logger>
+	
+	<logger name="SMTCRAWLER" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="smtcrawler-appender" />
+	</logger>
+	
+	<logger name="CORE" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="core-appender" />
+	</logger>
+	
+	<logger name="HTTP" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="http-appender" />
+	</logger>
+	
+	<logger name="TASK" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="task-appender" />
+	</logger>
+	
+	<logger name="FILE" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="file-appender" />
+	</logger>
+	
+	<logger name="PROXY" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="proxy-appender" />
+	</logger>
+	
+	<logger name="PROXY_MONITOR" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="proxy-monitor-appender" />
+	</logger>
+	
+	<logger name="BACKUP" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="backup-appender" />
+	</logger>
+	
+	<logger name="SUBJOBHIS" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="subjobhis-appender" />
+	</logger>
+	
+	 <logger name="MONITOR" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="monitor-appender" />
+	</logger>
+	
+	<logger name="INIT" additivity="false">
+		<level value="DEBUG" />
+		<appender-ref ref="console-appender" />
+	</logger>
+	
+	<logger name="org.springframework.core">
+		<level value="INFO" />
+	</logger>
 
-	<logger name="com.example.demo" level="DEBUG">
-		<appender-ref ref="SAMPLE" />
+	<logger name="org.springframework.beans">
+		<level value="INFO" />
 	</logger>
-	<logger name="com.example.demo" level="INFO">
-		<appender-ref ref="DAILY_ROLLING_FILE_APPENDER" />
+
+	<logger name="org.springframework.context">
+		<level value="INFO" />
 	</logger>
-	<root level="INFO">
-		<appender-ref ref="STDOUT" />
+	
+	<logger name="com.hazelcast">
+        <level value="debug"/>
+        <appender-ref ref="wspider-appender" />
+    </logger>
+    
+    <logger name="com.epopcon.wspider.db.fashion.dao.FashionDao">
+    	<level value="ERROR" />
+    	<appender-ref ref="sql-appender" />
+    </logger>
+    
+    <logger name="com.epopcon.wspider.db.dflt.dao.ServiceJobDao">
+    	<level value="ERROR" />
+    	<appender-ref ref="sql-appender" />
+    </logger>
+    
+	<logger name="java.sql" additivity="false">
+		<level value="WARN" />
+		<appender-ref ref="sql-appender" />
+	</logger>
+
+	<logger name="jdbc" additivity="false">
+   		<level value="OFF" />
+  	</logger>
+  	
+  	<logger name="jdbc.sqlonly" additivity="false">
+   		<level value="INFO" />
+   		<appender-ref ref="sql-appender" />
+  	</logger>
+	<logger name="jdbc.sqltiming" additivity="false">
+   		<level value="WARN" />
+   		<appender-ref ref="slow-query-appender" />
+  	</logger>
+
+	<logger name="org.apache">
+		<level value="WARN" />
+	</logger>
+	
+	<logger name="org.apache.hadoop.util.Shell">
+		<level value="OFF" />
+	</logger>
+
+	<!-- Root Logger -->
+	<root>
+		<level value="INFO"/>
+		<appender-ref ref="console-appender" />
 	</root>
 </configuration>

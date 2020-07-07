@@ -20,44 +20,52 @@ public class InsertData {
 		try {
 			HashMap<String, Integer> dbHashMap = new HashMap<>(); // aid: id
 
-			for (int i = 0; i < newsItemMap.size(); i++) {
+			for (Integer key : newsItemMap.keySet()) {
 				List<NewsVO> list = newsMapper.newsSelect();
+				list.stream().forEach(i -> dbHashMap.put(i.getAID(), i.getID()));
 
-				for (int j = 0; j < list.size(); j++) {
-					dbHashMap.put(list.get(j).getAID(), list.get(j).getID());
-				}
-
-				NewsVO newsVO = new NewsVO();
-				NewsInfoVO newsInfoVO = new NewsInfoVO();
-
-				// string으로 다 세팅
-				newsVO.setAID(newsItemMap.get(i).getAid());
-				newsVO.setCATEGORY(newsItemMap.get(i).getCategory());
-				newsVO.setURL(newsItemMap.get(i).getUrl());
-				newsVO.setTITLE(newsItemMap.get(i).getTitle());
-				newsVO.setCONTENT(newsItemMap.get(i).getContent());
-				newsVO.setIMAGE(newsItemMap.get(i).getImage());
+				NewsVO newsVO = makeNewsVO(newsItemMap, key);
+				NewsInfoVO newsInfoVO = makeNewsInfoVO(newsItemMap, key);
 
 				// 이미 테이블에 데이터가 존재한다면 UPT_DT만 update
-				if (dbHashMap.get(newsItemMap.get(i).getAid()) != null) {
-					newsMapper.newsUpdate(dbHashMap.get(newsItemMap.get(i).getAid()));
-					newsInfoVO.setNEWS_ID(dbHashMap.get(newsItemMap.get(i).getAid())); // int
+				if (dbHashMap.get(newsItemMap.get(key).getAid()) != null) {
+					newsMapper.newsUpdate(dbHashMap.get(newsItemMap.get(key).getAid()));
+					newsInfoVO.setNEWS_ID(dbHashMap.get(newsItemMap.get(key).getAid())); // int
 				} else {
 					newsMapper.newsInsert(newsVO);
-					dbHashMap.put(newsItemMap.get(i).getAid(), newsMapper.newsSelectLastRow().getID());
-
+					dbHashMap.put(newsItemMap.get(key).getAid(), newsMapper.newsSelectLastRow().getID());
 					newsInfoVO.setNEWS_ID(newsMapper.newsSelectLastRow().getID()); // int
 				}
 
-				newsInfoVO.setRANK((i + 1)); // int
-				newsInfoVO.setVIEW(Integer.parseInt(newsItemMap.get(i).getRankingViews().replace(",", ""))); // string
-
 				newsInfoMapper.newsInfoInsert(newsInfoVO);
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return "";
+	}
+
+	private NewsVO makeNewsVO(Map<Integer, NewsItem> newsItemMap, Integer key) {
+		NewsVO newsVO = new NewsVO();
+		// string으로 다 세팅
+		newsVO.setAID(newsItemMap.get(key).getAid());
+		newsVO.setCATEGORY(newsItemMap.get(key).getCategory());
+		newsVO.setURL(newsItemMap.get(key).getUrl());
+		newsVO.setTITLE(newsItemMap.get(key).getTitle());
+		newsVO.setCONTENT(newsItemMap.get(key).getContent());
+		newsVO.setIMAGE(newsItemMap.get(key).getImage());
+
+		return newsVO;
+	}
+
+	private NewsInfoVO makeNewsInfoVO(Map<Integer, NewsItem> newsItemMap, Integer key) {
+		NewsInfoVO newsInfoVO = new NewsInfoVO();
+
+		newsInfoVO.setRANK((key + 1)); // int
+		newsInfoVO.setVIEW(Integer.parseInt(newsItemMap.get(key).getRankingViews().replace(",", ""))); // string
+
+		return newsInfoVO;
 	}
 
 }
