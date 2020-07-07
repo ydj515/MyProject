@@ -12,7 +12,7 @@ public class CrawlingCV {
 	public static final String PRAGMA = "no-cache";
 	public static final String CONTENT_TYPE = "application/x-www-form-urlencoded; charset=UTF-8";
 
-	public static final String URL = "https://news.naver.com/main/ranking/popularDay.nhn?rankingType=popular_day&sectionId=105";
+	public static final String BASE_URL = "https://news.naver.com/main/ranking/popularDay.nhn?rankingType=popular_day&sectionId=";
 
 	public static final String NEWS_ITEM = "li.ranking_item";
 
@@ -27,4 +27,12 @@ public class CrawlingCV {
 	public static final String OID_PATTERN = "oid=(\\d+)";
 	public static final String AID_PATTERN = "aid=(\\d+)";
 
+	public static final String POLITICS = "정치";
+	public static final String ECONOMY = "경제";
+	public static final String SOCIETY = "사회";
+	public static final String CULTURE = "생활/문화";
+	public static final String GLOBAL = "세계";
+	public static final String IT = "IT/과학";
+
+	public static final String NEWS_BASE_URL = "https://news.naver.com";
 }

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.example.project.domain.NewsInfoVO;
@@ -16,7 +15,6 @@ import com.example.project.mapper.NewsMapper;
 @Configuration
 public class InsertData {
 
-	@Bean
 	public String insert(Map<Integer, NewsItem> newsItemMap, NewsMapper newsMapper, NewsInfoMapper newsInfoMapper) {
 
 		try {
@@ -32,11 +30,13 @@ public class InsertData {
 				NewsVO newsVO = new NewsVO();
 				NewsInfoVO newsInfoVO = new NewsInfoVO();
 
-				newsVO.setAID(newsItemMap.get(i).getAid()); // string
-				newsVO.setCATEGORY(newsItemMap.get(i).getCategory()); // string
-				newsVO.setTITLE(newsItemMap.get(i).getTitle()); // string
-				newsVO.setCONTENT(newsItemMap.get(i).getContent()); // string
-				newsVO.setIMAGE(newsItemMap.get(i).getImage()); // string
+				// string으로 다 세팅
+				newsVO.setAID(newsItemMap.get(i).getAid());
+				newsVO.setCATEGORY(newsItemMap.get(i).getCategory());
+				newsVO.setURL(newsItemMap.get(i).getUrl());
+				newsVO.setTITLE(newsItemMap.get(i).getTitle());
+				newsVO.setCONTENT(newsItemMap.get(i).getContent());
+				newsVO.setIMAGE(newsItemMap.get(i).getImage());
 
 				// 이미 테이블에 데이터가 존재한다면 UPT_DT만 update
 				if (dbHashMap.get(newsItemMap.get(i).getAid()) != null) {

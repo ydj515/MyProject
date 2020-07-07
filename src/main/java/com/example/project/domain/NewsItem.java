@@ -10,14 +10,17 @@ import lombok.Setter;
 public class NewsItem {
 
 	private String category;
+	private String url;
 	private String title;
 	private String content;
 	private String image;
 	private String rankingViews;
 	private String aid;
 
-	public NewsItem(String category, String title, String content, String image, String rankingViews, String aid) {
+	public NewsItem(String category, String url, String title, String content, String image, String rankingViews,
+			String aid) {
 		this.category = category;
+		this.url = url;
 		this.title = title;
 		this.content = content;
 		this.image = image;
@@ -31,6 +34,14 @@ public class NewsItem {
 
 	public void setCategory(String category) {
 		this.category = category;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	public String getTitle() {
@@ -72,4 +83,6 @@ public class NewsItem {
 	public void setAid(String aid) {
 		this.aid = aid;
 	}
+
+	
 }

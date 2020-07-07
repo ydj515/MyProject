@@ -8,7 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<insert id="newsInsert" parameterType="com.example.project.domain.NewsVO">
 		INSERT INTO MWS_COLT_NEWS
 		VALUES
-		(#{ID},#{AID},#{CATEGORY},#{TITLE},#{CONTENT},#{IMAGE},now(),now());
+		(#{ID},#{AID},#{CATEGORY},#{URL},#{TITLE},#{CONTENT},#{IMAGE},now(),now());
 	</insert>
 
 	<select id="newsSelect" resultType="com.example.project.domain.NewsVO">
@@ -23,7 +23,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 
 	<select id="newsSelectLastRow" resultType="com.example.project.domain.NewsVO">
-		SELECT * FROM MWS_COLT_NEWS
+		SELECT * FROM
+		MWS_COLT_NEWS
 		WHERE id = (
 			SELECT MAX(id)
 			FROM MWS_COLT_NEWS

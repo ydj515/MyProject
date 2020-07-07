@@ -1,9 +1,7 @@
 package com.example.project.crawler;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,7 +9,6 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import com.example.project.cv.CrawlingCV;
@@ -20,18 +17,13 @@ import com.example.project.domain.NewsItem;
 @Component
 public class Crawler {
 
-	@Bean
-	public Map<Integer, NewsItem> run() throws IOException {
+	public Map<Integer, NewsItem> run(String threadNumber) throws IOException {
 
-		Document doc = makeConnection(CrawlingCV.URL);
+		Document doc = makeConnection(CrawlingCV.BASE_URL + threadNumber);
 
 		Map<Integer, NewsItem> newsItemMap = new HashMap<>();
 
-		List<String> categories = new ArrayList<String>();
-
-		Elements categoryElements = doc.select("li.ranking_category_item");
-
-		// thread 돌려서 한번에 parsing
+		String category = getCategory(threadNumber);
 
 		Elements items = doc.select(CrawlingCV.NEWS_ITEM);
 
@@ -39,9 +31,10 @@ public class Crawler {
 			Elements titles = items.get(i).select(CrawlingCV.TITLE_TAG);// TITLE
 			Elements contents = items.get(i).select(CrawlingCV.CONTENT_TAG); // CONTENT
 			Elements rankingHeadLineAs = items.get(i).select(CrawlingCV.AID_TAG); // AID
+			String url = getNewsUrl(rankingHeadLineAs);
 			Elements images = items.get(i).select(CrawlingCV.IMAGE_TAG); // IMAGE
 			Elements rankingViews = items.get(i).select(CrawlingCV.VIEW_TAG); // VIEW
-			NewsItem newsItem = makeNewsItem("IT/과학", titles, contents, images, rankingViews, rankingHeadLineAs);
+			NewsItem newsItem = makeNewsItem(category, url, titles, contents, images, rankingViews, rankingHeadLineAs);
 			newsItemMap.put(i, newsItem);
 		}
 
@@ -56,11 +49,34 @@ public class Crawler {
 				.header("pragma", CrawlingCV.PRAGMA).get();
 	}
 
-	private NewsItem makeNewsItem(String category, Elements titles, Elements contents, Elements images,
+	private String getCategory(String categoryNumber) {
+		switch (Integer.valueOf(categoryNumber)) {
+		case 100:
+			return CrawlingCV.POLITICS;
+		case 101:
+			return CrawlingCV.ECONOMY;
+		case 102:
+			return CrawlingCV.SOCIETY;
+		case 103:
+			return CrawlingCV.CULTURE;
+		case 104:
+			return CrawlingCV.GLOBAL;
+		case 105:
+			return CrawlingCV.IT;
+		default:
+			System.out.println("Category Error");
+			return "";
+		}
+	}
+
+	private String getNewsUrl(Elements rankingHeadLineAs) {
+		return CrawlingCV.NEWS_BASE_URL + rankingHeadLineAs.attr("href").replace("amp;", "");
+	}
+
+	private NewsItem makeNewsItem(String category, String url, Elements titles, Elements contents, Elements images,
 			Elements rankingViews, Elements rankingHeadLineAs) {
-		String aid = makeAid(rankingHeadLineAs);
-		return new NewsItem(category, titles.text(), contents.text(), images.attr(CrawlingCV.SRC_TAG),
-				rankingViews.text(), aid);
+		return new NewsItem(category, url, titles.text(), contents.text(), images.attr(CrawlingCV.SRC_TAG),
+				rankingViews.text(), makeAid(rankingHeadLineAs));
 	}
 
 	private String makeAid(Elements rankingHeadLineAs) {
