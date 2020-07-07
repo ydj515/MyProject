@@ -6,8 +6,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.example.project.mapper.NewsInfoMapper">
 
 	<insert id="newsInfoInsert" parameterType="com.example.project.domain.NewsInfoVO">
-		insert into MWS_COLT_NEWS_INFO
-		values
+		INSERT INTO MWS_COLT_NEWS_INFO
+		VALUES
 		(#{ID},#{NEWS_ID},#{RANK},#{VIEW},now())
 	</insert>
 

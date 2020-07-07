@@ -6,20 +6,30 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.example.project.mapper.NewsMapper">
 
 	<insert id="newsInsert" parameterType="com.example.project.domain.NewsVO">
-		insert into MWS_COLT_NEWS
-		values
-		(#{ID},#{AID},#{TITLE},#{CONTENT},#{IMAGE},now(),now());
+		INSERT INTO MWS_COLT_NEWS
+		VALUES
+		(#{ID},#{AID},#{CATEGORY},#{TITLE},#{CONTENT},#{IMAGE},now(),now());
 	</insert>
 
 	<select id="newsSelect" resultType="com.example.project.domain.NewsVO">
-		select * from MWS_COLT_NEWS
+		SELECT * from MWS_COLT_NEWS
 	</select>
 
 	<update id="newsUpdate" parameterType="int">
-		update MWS_COLT_NEWS
-		set
+		UPDATE MWS_COLT_NEWS
+		SET
 		UPT_DT=now()
-		where id=#{ID}
+		WHERE id=#{ID}
 	</update>
+
+	<select id="newsSelectLastRow" resultType="com.example.project.domain.NewsVO">
+		SELECT * FROM MWS_COLT_NEWS
+		WHERE id = (
+			SELECT MAX(id)
+			FROM MWS_COLT_NEWS
+		)
+	</select>
+
+
 
 </mapper>

@@ -13,6 +13,7 @@ public class NewsVO {
 
 	private int ID;
 	private String AID;
+	private String CATEGORY;
 	private String TITLE;
 	private String CONTENT;
 	private String IMAGE;
@@ -33,6 +34,14 @@ public class NewsVO {
 
 	public void setAID(String AID) {
 		this.AID = AID;
+	}
+
+	public String getCATEGORY() {
+		return CATEGORY;
+	}
+
+	public void setCATEGORY(String CATEGORY) {
+		this.CATEGORY = CATEGORY;
 	}
 
 	public String getTITLE() {

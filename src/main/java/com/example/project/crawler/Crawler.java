@@ -2,7 +2,11 @@ package com.example.project.crawler;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -10,82 +14,75 @@ import org.jsoup.select.Elements;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import com.example.project.cv.CrawlingCV;
+import com.example.project.domain.NewsItem;
+
 @Component
 public class Crawler {
 
-	private final String URL = "https://news.naver.com/main/ranking/popularDay.nhn?rankingType=popular_day&sectionId=105";
-	private final String TITLE_TAG = "div.ranking_headline a[title]";
-	private final String CONTENT_TAG = "div.ranking_lede";
-	private final String AID_TAG = "div.ranking_headline a";
-	private final String IMAGE_TAG = "div.ranking_thumb img";
-	private final String VIEW_TAG = "div.ranking_view";
-
-	private Document doc = null;
-
 	@Bean
-	public List<Elements> run() {
+	public Map<Integer, NewsItem> run() throws IOException {
 
-		List<Elements> elementsList = new ArrayList<>();
+		Document doc = makeConnection(CrawlingCV.URL);
 
-		setHeaderOption();
+		Map<Integer, NewsItem> newsItemMap = new HashMap<>();
 
-		// TITLE
-		Elements titles = doc.select(TITLE_TAG);
-		elementsList.add(titles);
+		List<String> categories = new ArrayList<String>();
 
-		// CONTENT
-		Elements contents = doc.select(CONTENT_TAG);
-		elementsList.add(contents);
+		Elements categoryElements = doc.select("li.ranking_category_item");
 
-		// AID
-		Elements rankingHeadLineAs = doc.select(AID_TAG);
-		elementsList.add(rankingHeadLineAs);
+		// thread 돌려서 한번에 parsing
 
-		// IMAGE
-		Elements images = doc.select(IMAGE_TAG);
-		elementsList.add(images);
+		Elements items = doc.select(CrawlingCV.NEWS_ITEM);
 
-		// VIEW
-		Elements RankingViews = doc.select(VIEW_TAG);
-		elementsList.add(RankingViews);
-
-		return elementsList;
-	}
-
-	@Bean
-	private void setHeaderOption() {
-
-		// GET 방식으로 HTML 가져오기
-		try {
-
-			doc = Jsoup.connect(URL).get();
-
-			// POST 방식으로 HTML 가져오기
-			// doc = Jsoup.connect(URL).post();
-
-			// 결과를 못가져오는 경우 header에 값을 추가해주어야한다.
-			doc = Jsoup.connect(URL).userAgent(
-					"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36") // explorer,
-																																		// chrome
-																																		// 등
-					.header("scheme", "https")
-					.header("accept",
-							"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-					.header("accept-encoding", "gzip, deflate, br")
-					.header("accept-language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7,es;q=0.6") // language
-					.header("cache-control", "no-cache").header("pragma", "no-cache") // 캐시
-																						// 전략
-					.header("upgrade-insecure-requests", "1").get();
-			// 3. 가져온 HTML Document 를 확인하기
-			// System.out.println(doc.toString());
-
-			// text : 안에 값만
-			// toString() : 전체 싹다
-
-		} catch (IOException e) {
-			e.printStackTrace();
+		for (int i = 0; i < items.size(); i++) {
+			Elements titles = items.get(i).select(CrawlingCV.TITLE_TAG);// TITLE
+			Elements contents = items.get(i).select(CrawlingCV.CONTENT_TAG); // CONTENT
+			Elements rankingHeadLineAs = items.get(i).select(CrawlingCV.AID_TAG); // AID
+			Elements images = items.get(i).select(CrawlingCV.IMAGE_TAG); // IMAGE
+			Elements rankingViews = items.get(i).select(CrawlingCV.VIEW_TAG); // VIEW
+			NewsItem newsItem = makeNewsItem("IT/과학", titles, contents, images, rankingViews, rankingHeadLineAs);
+			newsItemMap.put(i, newsItem);
 		}
 
+		return newsItemMap;
+	}
+
+	/* GET */
+	private Document makeConnection(String url) throws IOException {
+		return Jsoup.connect(url).userAgent(CrawlingCV.USER_AGENT).header("scheme", CrawlingCV.SCHEME)
+				.header("accept", CrawlingCV.ACCEPT).header("accept-encoding", CrawlingCV.ACCEPT_ENCODING)
+				.header("accept-language", CrawlingCV.ACCEPT_LANGUAGE).header("cache-control", CrawlingCV.CACHE_CONTROL)
+				.header("pragma", CrawlingCV.PRAGMA).get();
+	}
+
+	private NewsItem makeNewsItem(String category, Elements titles, Elements contents, Elements images,
+			Elements rankingViews, Elements rankingHeadLineAs) {
+		String aid = makeAid(rankingHeadLineAs);
+		return new NewsItem(category, titles.text(), contents.text(), images.attr(CrawlingCV.SRC_TAG),
+				rankingViews.text(), aid);
+	}
+
+	private String makeAid(Elements rankingHeadLineAs) {
+		String aHref = rankingHeadLineAs.attr("href");
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		Pattern oidPattern = Pattern.compile(CrawlingCV.OID_PATTERN);
+		Pattern aidPattern = Pattern.compile(CrawlingCV.AID_PATTERN);
+
+		Matcher matcher = oidPattern.matcher(aHref);
+		Matcher matcher2 = aidPattern.matcher(aHref);
+
+		while (matcher.find()) {
+			stringBuilder.append(matcher.group(1));
+		}
+
+		while (matcher2.find()) {
+			stringBuilder.append(matcher2.group(1));
+		}
+
+		return stringBuilder.toString();
 	}
 
 }

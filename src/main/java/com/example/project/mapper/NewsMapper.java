@@ -12,4 +12,6 @@ public interface NewsMapper {
 
 	public void newsUpdate(int id) throws Exception;
 
+	public NewsVO newsSelectLastRow() throws Exception;
+
 }
