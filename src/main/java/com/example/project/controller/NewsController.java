@@ -1,8 +1,8 @@
 package com.example.project.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.project.crawler.Crawler;
 import com.example.project.crawler.CrawlingThread;
@@ -28,7 +28,9 @@ public class NewsController {
 	@Autowired(required = true)
 	CrawlingThread crawlingThread;
 
-	@RequestMapping(value = "/")
+	// @RequestMapping(value = "")
+	// 매 10초에 실행되니까 1분마다 실행
+	@Scheduled(cron = "10 * * * * *")
 	public String hellSpringBoot() throws Exception {
 
 		// thread 6개

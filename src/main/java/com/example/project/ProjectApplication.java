@@ -12,11 +12,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @MapperScan(value = { "com.example.project.mapper" })
 @ComponentScan(basePackages = { "com.example.project.aop", "com.example.project.controller", "com.example.project.crawler" })
 @EnableAspectJAutoProxy // aop
+@EnableScheduling // scheduling
 public class ProjectApplication {
 
 	public static void main(String[] args) {

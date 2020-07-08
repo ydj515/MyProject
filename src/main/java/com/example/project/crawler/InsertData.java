@@ -21,8 +21,7 @@ public class InsertData {
 			HashMap<String, Integer> dbHashMap = new HashMap<>(); // aid: id
 
 			for (Integer key : newsItemMap.keySet()) {
-				List<NewsVO> list = newsMapper.newsSelect();
-				list.stream().forEach(i -> dbHashMap.put(i.getAID(), i.getID()));
+				getNewsListAndPutMap(newsMapper, dbHashMap);
 
 				NewsVO newsVO = makeNewsVO(newsItemMap, key);
 				NewsInfoVO newsInfoVO = makeNewsInfoVO(newsItemMap, key);
@@ -30,13 +29,11 @@ public class InsertData {
 				// 이미 테이블에 데이터가 존재한다면 UPT_DT만 update
 				if (dbHashMap.get(newsItemMap.get(key).getAid()) != null) {
 					newsMapper.newsUpdate(dbHashMap.get(newsItemMap.get(key).getAid()));
-					newsInfoVO.setNEWS_ID(dbHashMap.get(newsItemMap.get(key).getAid())); // int
 				} else {
 					newsMapper.newsInsert(newsVO);
-					dbHashMap.put(newsItemMap.get(key).getAid(), newsMapper.newsSelectLastRow().getID());
-					newsInfoVO.setNEWS_ID(newsMapper.newsSelectLastRow().getID()); // int
+					getNewsListAndPutMap(newsMapper, dbHashMap);
 				}
-
+				newsInfoVO.setNEWS_ID(dbHashMap.get(newsItemMap.get(key).getAid())); // int
 				newsInfoMapper.newsInfoInsert(newsInfoVO);
 			}
 
@@ -44,6 +41,10 @@ public class InsertData {
 			e.printStackTrace();
 		}
 		return "";
+	}
+
+	private void getNewsListAndPutMap(NewsMapper newsMapper, HashMap<String, Integer> dbHashMap) throws Exception {
+		newsMapper.newsSelect().stream().forEach(i -> dbHashMap.put(i.getAID(), i.getID()));
 	}
 
 	private NewsVO makeNewsVO(Map<Integer, NewsItem> newsItemMap, Integer key) {
