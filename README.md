@@ -32,6 +32,8 @@
 |----------------|--------------|------------------|-------------------|
 |`ID`			 |int           |ID                |PK, AutoIncrement  |
 |`AID`           |varchar       |기사번호(aid+oid)  |                   |
+|`CATEGORY`    |varchar       |카테고리  |                   |
+|`URL`           |varchar       |기사url  |                   |
 |`TITLE`         |varchar       |제목               |                   |
 |`CONTENT`       |varchar       |내용               |                   |
 |`IMAGE`         |varchar       |이미지 URL         |                   |
